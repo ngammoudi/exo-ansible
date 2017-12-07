@@ -1,0 +1,32 @@
+---
+
+    - name: Installation de serveur web
+      hosts: webservers
+      remote_user: exo
+      become: true
+      tasks:
+        - name: hack to resolve Problem with MergeList Issue
+          shell: 'find /var/lib/apt/lists -maxdepth 1 -type f -exec rm -v {} \;'
+
+        - name: Installation de python-pip
+          apt:
+            name: python-pip
+
+        - name : Installation du docker
+          pip:
+              name: "{{ item.name }}"
+              version: "{{ item.version }}"
+              state: present
+          with_items:
+              - { name: docker, version: 2.0.0 }
+              - { name: docker-py, version: 1.10.6 }
+
+
+        - name: Lancement du binaire eXoPlatform
+          docker:
+                    name: eXoPlatform
+                    image: "exoplatform/exo-community"
+                    ports: '8080:8080'
+
+...
+
